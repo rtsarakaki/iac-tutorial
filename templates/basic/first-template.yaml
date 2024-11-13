@@ -7,11 +7,11 @@ Parameters:
     Type: String
     NoEcho: true
 
-Resources:
+Resource:
   MyBucketS3:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub my-bucker-s3-${AWS::AccountId}
+      BucketName: !Sub my-bucket-s3-${AWS::AccountId}
 
   MyUser:
     Type: AWS::IAM::User
