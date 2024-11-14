@@ -7,7 +7,7 @@ Parameters:
     Type: String
     NoEcho: true
 
-Resource:
+Resources:
   MyBucketS3:
     Type: AWS::S3::Bucket
     Properties:
