@@ -1,0 +1,22 @@
+name: Validate Cloudformation Templates
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cfn-lint
+        run: |
+          pip install cfn-lint
+
+      - name: Validate Cloudformation templates
+        run: |
+          cfn-lint -t templates/**/*.yaml --ignore-checks W

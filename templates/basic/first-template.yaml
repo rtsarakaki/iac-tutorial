@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: This template creates a buckets3, a user and a policy.
+
+Parameters:
+  UserPassword:
+    Description: "Password for the IAM user"
+    Type: String
+    NoEcho: true
+
+Resources:
+  MyBuscketS3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub mybucker-s3-${AWS::AccountId}
+
+  MyUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: "my-user"
+      LoginProfile:
+        Password: !Ref UserPassword
+      ManagedPolicyArns:
+        - !Ref MyPolicyToAccessS3
+
+  MyPolicyToAccessS3:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: MyPolicyToAccessS3
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: "s3:*"
+            Resource: "*"
