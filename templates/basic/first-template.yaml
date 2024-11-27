@@ -11,7 +11,7 @@ Resources:
   MyBuscketS3:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub mybucker-s3-${AWS::AccountId}
+      BucketName: !Sub mybucket-s3-${AWS::AccountId}
 
   MyUser:
     Type: AWS::IAM::User
