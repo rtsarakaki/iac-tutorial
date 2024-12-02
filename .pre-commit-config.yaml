@@ -6,3 +6,10 @@ repos:
         entry: python custom-hook-validation/branch-name-validation.py
         language: python
         stages: [pre-commit, pre-push]
+      - id: file-max-size-validation
+        name: Validate Template Size
+        entry: python custom-hook-validation/file-max-size-validation.py
+        language: python
+        stages: [pre-commit]
+        args: ["--max-size=500"]
+        files: ^templates/.*\.yaml$
