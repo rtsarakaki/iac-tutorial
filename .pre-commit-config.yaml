@@ -1,0 +1,32 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-branch-name
+        name: Validate Branch Name
+        entry: python custom-hook-validation/branch-name-validation.py
+        language: python
+        stages: [pre-commit, pre-push]
+      - id: file-max-size-validation
+        name: Validate Template Size
+        entry: python custom-hook-validation/file-max-size-validation.py
+        language: python
+        stages: [pre-commit]
+        args: ["--max-size=500"]
+        files: ^templates/.*\.yaml$
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.0.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+  - repo: https://github.com/aws-cloudformation/cfn-python-lint
+    rev: v1.20.0
+    hooks:
+      - id: cfn-python-lint
+        args: [--ignore-checks=W]
+        files: ^templates/.*\.yaml$
+  - repo: https://github.com/gitguardian/ggshield
+    rev: v1.33.0
+    hooks:
+      - id: ggshield
+        language_version: python3
+        stages: [pre-commit]
