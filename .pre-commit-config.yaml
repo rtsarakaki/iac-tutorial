@@ -24,3 +24,9 @@ repos:
       - id: cfn-python-lint
         args: [--ignore-checks=W]
         files: ^templates/.*\.yaml$
+  - repo: https://github.com/gitguardian/ggshield
+    rev: v1.33.0
+    hooks:
+      - id: ggshield
+        language_version: python3
+        stages: [pre-commit]
