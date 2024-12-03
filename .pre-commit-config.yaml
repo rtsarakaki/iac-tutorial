@@ -18,3 +18,9 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
+  - repo: https://github.com/aws-cloudformation/cfn-python-lint
+    rev: v1.20.0
+    hooks:
+      - id: cfn-python-lint
+        args: [--ignore-checks=W]
+        files: ^templates/.*\.yaml$
