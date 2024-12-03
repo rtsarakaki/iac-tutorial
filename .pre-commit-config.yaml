@@ -13,3 +13,8 @@ repos:
         stages: [pre-commit]
         args: ["--max-size=500"]
         files: ^templates/.*\.yaml$
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.0.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
