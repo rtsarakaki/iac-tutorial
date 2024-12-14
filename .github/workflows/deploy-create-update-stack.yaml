@@ -1,0 +1,52 @@
+name: Deploy Stack
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      STACK_NAME: stack-created-with-github-actions
+      TEMPLATE_FILE: templates/basic/first-template.yaml
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Check if Stack Exists
+        id: check_stack
+        run: |
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null; then
+            echo "exists=true" >> $GITHUB_ENV
+          else
+            echo "exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create Stack
+        if: env.exists == 'false'
+        run: |
+          echo "Stack does not exist. Creating..."
+          aws cloudformation create-stack \
+            --stack-name $STACK_NAME \
+            --template-body file://$TEMPLATE_FILE \
+            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
+            --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Update Stack
+        if: env.exists == 'true'
+        run: |
+          echo "Stack exists. Updating..."
+          aws cloudformation update-stack \
+            --stack-name $STACK_NAME \
+            --template-body file://$TEMPLATE_FILE \
+            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
+            --capabilities CAPABILITY_NAMED_IAM
