@@ -1,0 +1,27 @@
+name: Deploy Stack
+on:
+  push:
+    branches:
+      - prepare/iac-video07
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy Stack
+        run: |
+          aws cloudformation create-stack \
+            --stack-name stack-created-with-github-actions \
+            --template-body file://templates/basic/firts-template.yaml \
+            -- parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
+            -- capabilities CAPABILITY_NAMED_IAM
