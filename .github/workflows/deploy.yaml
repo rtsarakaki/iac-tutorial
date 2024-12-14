@@ -1,9 +1,6 @@
 name: Deploy Stack
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - prepare/iac-video07
 
 jobs:
   deploy:
@@ -46,7 +43,7 @@ jobs:
       - name: Deploy Stack
         run: |
           aws cloudformation deploy \
-            --stack-name stack-created-with-github-actions \
-            --template-file templates/basic/first-template.yaml \
+            --stack-name $STACK_NAME \
+            --template-file $TEMPLATE_FILE \
             --parameter-overrides UserPassword=${{ secrets.USER_PASSWORD }} \
             --capabilities CAPABILITY_NAMED_IAM
