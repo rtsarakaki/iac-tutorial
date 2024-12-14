@@ -22,8 +22,8 @@ jobs:
       - name: Deploy Stack
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          name: $STACK_NAME
-          template: $TEMPLATE_FILE
+          name: ${{ env.STACK_NAME }}
+          template: ${{ env.TEMPLATE_FILE }}
           capabilities: CAPABILITY_NAMED_IAM
           parameter-overrides: UserPassword=${{ secrets.USER_PASSWORD }}
           no-fail-on-empty-changeset: "1"
