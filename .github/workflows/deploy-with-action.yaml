@@ -20,9 +20,10 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Deploy Stack
-        uses: aws-actions/aws-cloudformation-action@v1
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          stack-name: $STACK_NAME
-          template-file: $TEMPLATE_FILE
+          name: $STACK_NAME
+          template: $TEMPLATE_FILE
           capabilities: CAPABILITY_NAMED_IAM
           parameter-overrides: UserPassword=${{ secrets.USER_PASSWORD }}
+          no-fail-on-empty-changeset: "1"
