@@ -1,9 +1,6 @@
-name: Deploy Stack with Conditions
+name: Create or Update Stack with Conditions
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - prepare/iac-video07
 
 jobs:
   deploy:
