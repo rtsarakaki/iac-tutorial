@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - prepare/iac-video07
+  workflow_dispatch:
 
 jobs:
   deploy:
