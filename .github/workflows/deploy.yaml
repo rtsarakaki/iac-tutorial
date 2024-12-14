@@ -23,5 +23,5 @@ jobs:
           aws cloudformation create-stack \
             --stack-name stack-created-with-github-actions \
             --template-body file://templates/basic/firts-template.yaml \
-            -- parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
-            -- capabilities CAPABILITY_NAMED_IAM
+            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
+            --capabilities CAPABILITY_NAMED_IAM
