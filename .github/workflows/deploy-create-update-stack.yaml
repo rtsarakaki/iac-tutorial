@@ -1,4 +1,4 @@
-name: Deploy Stack
+name: Deploy Stack with Conditions
 on:
   workflow_dispatch:
   push:
