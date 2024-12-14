@@ -38,8 +38,16 @@ jobs:
             exit 1
           fi
 
+      - name: Delete and Recreate Stack (if in ROLLBACK_COMPLETE)
+        if: env.stack_action == 'delete_and_create'
+        run: |
+          echo "Deleting stack in ROLLBACK_COMPLETE state..."
+          aws cloudformation delete-stack --stack-name $STACK_NAME
+          echo "Waiting for stack to be deleted..."
+          aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME
+
       - name: Create Stack
-        if: env.stack_action == 'create'
+        if: env.stack_action == 'create' || env.stack_action == 'delete_and_create'
         run: |
           echo "Stack does not exist. Creating..."
           aws cloudformation create-stack \
@@ -56,17 +64,4 @@ jobs:
             --stack-name $STACK_NAME \
             --template-body file://$TEMPLATE_FILE \
             --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
-            --capabilities CAPABILITY_NAMED_IAM
-
-      - name: Delete and Recreate Stack (if in ROLLBACK_COMPLETE)
-        if: env.stack_action == 'delete_and_create'
-        run: |
-          echo "Deleting stack in ROLLBACK_COMPLETE state..."
-          aws cloudformation delete-stack --stack-name $STACK_NAME
-          echo "Waiting for stack to be deleted..."
-          aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME
-          echo "Recreating stack..."
-          aws cloudformation create-stack \
-            --stack-name $STACK_NAME \
-            --template-body file://$TEMPLATE_FILE \
             --capabilities CAPABILITY_NAMED_IAM
