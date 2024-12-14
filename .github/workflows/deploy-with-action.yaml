@@ -8,6 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      STACK_NAME: stack-created-with-github-actions
+      TEMPLATE_FILE: templates/basic/first-template.yaml
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
