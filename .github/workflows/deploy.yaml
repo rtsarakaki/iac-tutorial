@@ -19,6 +19,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Check Stack Status
+        id: check_stack
+        run: |
+          STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null | jq -r '.Stacks[0].StackStatus')
+          echo "Stack status: $STATUS"
+          if [ "$STATUS" = "ROLLBACK_COMPLETE" ]; then
+            echo "stack_action=delete_and_create" >> $GITHUB_ENV
+          elif [ "$STATUS" = "CREATE_COMPLETE" ] || [ "$STATUS" = "UPDATE_COMPLETE" ]; then
+            echo "stack_action=update" >> $GITHUB_ENV
+          elif [ -z "$STATUS" ]; then
+            echo "stack_action=create" >> $GITHUB_ENV
+          else
+            echo "Unhandled stack status: $STATUS"
+            exit 1
+          fi
+
+      - name: Delete and Recreate Stack (if in ROLLBACK_COMPLETE)
+        if: env.stack_action == 'delete_and_create'
+        run: |
+          echo "Deleting stack in ROLLBACK_COMPLETE state..."
+          aws cloudformation delete-stack --stack-name $STACK_NAME
+          echo "Waiting for stack to be deleted..."
+          aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME
+
       - name: Deploy Stack
         run: |
           aws cloudformation deploy \
