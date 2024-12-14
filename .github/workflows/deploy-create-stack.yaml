@@ -1,9 +1,6 @@
 name: Deploy Stack
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - prepare/iac-video07
 
 jobs:
   deploy:
