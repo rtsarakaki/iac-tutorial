@@ -17,7 +17,7 @@ def get_current_branch_name():
 # Função para validar o nome da branch
 def validate_branch_name(branch_name):
     # Define o padrão de expressão regular para validar o nome da branch
-    pattern = r'^(feature|bugfix|hotfix|release|docs|chore)/[a-z0-9._-]+$'
+    pattern = r'^(feature|bugfix|hotfix|release|docs|chore|prepare)/[a-z0-9._-]+$'
     # Verifica se o nome da branch corresponde ao padrão
     if not re.match(pattern, branch_name):
         print(f"Error: Branch name '{branch_name}' is invalid. It must follow the pattern (feature|bugfix|hotfix|release|docs|chore) 'type/description'. Use git branch -M to rename the branch.")
