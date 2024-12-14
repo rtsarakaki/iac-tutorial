@@ -20,7 +20,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Deploy Stack
-        uses: aws-actions/aws-cloudformation-github-action@v4
+        uses: aws-actions/aws-cloudformation-github-action@v1
         with:
           stack-name: $STACK_NAME
           template-file: $TEMPLATE_FILE
