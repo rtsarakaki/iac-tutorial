@@ -1,0 +1,59 @@
+name: Basic Create Stack
+
+on:
+  push:
+    branches:
+      - feature/iac-video07
+
+jobs:
+  deploy:
+    environment: development
+    runs-on: ubuntu-latest
+    env:
+      STACK_NAME: stack-created-with-github-actions
+      TEMPLATE_FILE: templates/basic/first-template.yaml
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Check Stack Status
+        id: check_stack
+        run: |
+          STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null | jq -r '.Stacks[0].StackStatus')
+          echo "Stack status: $STATUS"
+          if [ "$STATUS" = "CREATE_COMPLETE" ] || [ "$STATUS" = "UPDATE_COMPLETE" ]; then
+            echo "stack_action=update" >> $GITHUB_ENV
+          elif [ -z "$STATUS" ]; then
+            echo "stack_action=create" >> $GITHUB_ENV
+          else
+            echo "Unhandled stack status: $STATUS"
+            exit 1
+          fi
+
+      - name: Create Stack
+        if: env.stack_action == 'create'
+        run: |
+          echo "Stack not exists. Creating..."
+          aws cloudformation create-stack \
+            --stack-name $STACK_NAME \
+            --template-body file://$TEMPLATE_FILE \
+            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
+            --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Update Stack
+        if: env.stack_action == 'update'
+        run: |
+          echo "Stack exists. Updating..."
+          aws cloudformation update-stack \
+            --stack-name $STACK_NAME \
+            --template-body file://$TEMPLATE_FILE \
+            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
+            --capabilities CAPABILITY_NAMED_IAM
