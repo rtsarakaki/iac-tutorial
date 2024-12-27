@@ -16,7 +16,7 @@ Resources:
   MyUser:
     Type: AWS::IAM::User
     Properties:
-      UserName: "my-user"
+      UserName: "tutorial-user"
       LoginProfile:
         Password: !Ref UserPassword
       ManagedPolicyArns:
@@ -25,7 +25,7 @@ Resources:
   MyPolicyToAccessS3:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: MyPolicyToAccessS3
+      ManagedPolicyName: tutorial-policy-to-access-s3
       PolicyDocument:
         Version: 2012-10-17
         Statement:

@@ -33,7 +33,7 @@ Resources:
                   - !If
                     - UseWildcard
                     - !Sub "repo:${GitHubOrganization}/*"
-                    - !Sub "repo:${GitHubOrganization}/${GitHubRepositoryName}"
+                    - !Sub "repo:${GitHubOrganization}/${GitHubRepositoryName}:*"
               StringEquals:
                 "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
       Policies:
@@ -53,6 +53,7 @@ Resources:
               - Sid: AllowCreateResources
                 Effect: Allow
                 Action:
+                  - cloudformation:*
                   - s3:*
                   - iam:*
                 Resource: "*"
