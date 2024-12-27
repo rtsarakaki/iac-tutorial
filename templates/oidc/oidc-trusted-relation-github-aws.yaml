@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: OIDC Trusted Relation between GitHub and AWS
+
+Parameters:
+  GitHubOrganization:
+    Description: "Github Organization"
+    Type: String
+  GitHubRepositoryName:
+    Description: "Github Repository Name (leave blank for all repositories)"
+    Type: String
+    Default: ""
+
+Conditions:
+  UseWildcard: !Equals
+    - !Ref GitHubRepositoryName
+    - ""
+
+Resources:
+  GitHubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: iac-tutorial-github-actions-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringLike:
+                "token.actions.githubusercontent.com:sub":
+                  - !If
+                    - UseWildcard
+                    - !Sub "repo:${GitHubOrganization}/*"
+                    - !Sub "repo:${GitHubOrganization}/${GitHubRepositoryName}"
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+      Policies:
+        - PolicyName: oidc-safety-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: OidcSafeties
+                Effect: Deny
+                Action:
+                  - sts:AssumeRole
+                Resource: "*"
+        - PolicyName: github-action-deploy-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: AllowCreateResources
+                Effect: Allow
+                Action:
+                  - s3:*
+                  - iam:*
+                Resource: "*"
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+      Url: https://token.actions.githubusercontent.com
