@@ -34,8 +34,8 @@ jobs:
       - name: Create or Update Stack
         uses: rtsarakaki/actions-aws-deploy@main
         with:
-          stack_name: ${{ env.STACK_NAME }}
-          template_file: ${{ env.TEMPLATE_FILE }}
-          user_password: ${{ secrets.USER_PASSWORD }}
-          aws_region: ${{ vars.AWS_REGION }}
-          dry_run: false
+          stack-name: ${{ env.STACK_NAME }}
+          template-file: ${{ env.TEMPLATE_FILE }}
+          user-password: ${{ secrets.USER_PASSWORD }}
+          aws-region: ${{ vars.AWS_REGION }}
+          dry-run: false
