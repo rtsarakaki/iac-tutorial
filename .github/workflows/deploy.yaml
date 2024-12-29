@@ -36,6 +36,6 @@ jobs:
         with:
           stack_name: ${{ env.STACK_NAME }}
           template_file: ${{ env.TEMPLATE_FILE }}
-          user_passwoard: ${{ secrets.USER_PASSWORD }}
+          user_password: ${{ secrets.USER_PASSWORD }}
           aws_region: ${{ vars.AWS_REGION }}
           dry_run: false
