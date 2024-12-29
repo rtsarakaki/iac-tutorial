@@ -31,37 +31,12 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Check Stack Status
-        id: check_stack
-        run: |
-          STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null | jq -r '.Stacks[0].StackStatus')
-          echo "Stack status: $STATUS"
-          if [ "$STATUS" = "CREATE_COMPLETE" ] || [ "$STATUS" = "UPDATE_COMPLETE" ]; then
-            echo "stack_action=update" >> $GITHUB_ENV
-          elif [ -z "$STATUS" ]; then
-            echo "stack_action=create" >> $GITHUB_ENV
-          else
-            echo "Unhandled stack status: $STATUS"
-            exit 1
-          fi
-
-      - name: Create Stack
+      - name: Create or Update Stack
         if: env.stack_action == 'create'
-        run: |
-          echo "Stack not exists. Creating..."
-          aws cloudformation create-stack \
-            --stack-name $STACK_NAME \
-            --template-body file://$TEMPLATE_FILE \
-            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
-            --capabilities CAPABILITY_NAMED_IAM
-
-      - name: Update Stack
-        if: env.stack_action == 'update'
-        run: |
-          echo "Stack exists. Updating..."
-          aws cloudformation update-stack \
-            --stack-name $STACK_NAME \
-            --template-body file://$TEMPLATE_FILE \
-            --parameter ParameterKey=UserPassword,ParameterValue=${{ secrets.USER_PASSWORD }} \
-            --capabilities CAPABILITY_NAMED_IAM
-          if [ $? -ne 0 ] && [ $? -ne 254 ]; then exit 1; fi
+        uses: rtsarakaki/actions-aws-deploy@main
+        with:
+          stack_name: ${{ env.STACK_NAME }}
+          template_file: ${{ env.TEMPLATE_FILE }}
+          user_passwoard: ${{ secrets.USER_PASSWORD }}
+          aws_region: ${{ vars.AWS_REGION }}
+          dry_run: false
