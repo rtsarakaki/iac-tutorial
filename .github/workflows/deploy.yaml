@@ -32,7 +32,6 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Create or Update Stack
-        if: env.stack_action == 'create'
         uses: rtsarakaki/actions-aws-deploy@main
         with:
           stack_name: ${{ env.STACK_NAME }}
